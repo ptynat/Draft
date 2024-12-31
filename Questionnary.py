@@ -35,12 +35,14 @@ def get_file_content(file_path):
 def update_file_content(file_path, content, sha):
     url = BASE_URL + file_path
     headers = {'Authorization': f'token {GITHUB_TOKEN}'}
+    import base64
+    encoded_content = base64.b64encode(content.encode('utf-8')).decode('utf-8')
     data = {
         "message": "Updating JSON file",
-        "content": content,
+        "content": encoded_content,
         "sha": sha
     }
-    response = requests.put(url, headers=headers, data=json.dumps(data))
+    response = requests.put(url, headers=headers, json=data)
     if response.status_code == 200:
         st.success("File updated successfully")
     else:
@@ -94,7 +96,7 @@ if check_password():
                 file_content = get_file_content(current_file)
                 if file_content:
                     decoded_content = json.loads(requests.get(file_content['download_url']).text)
-                    st.header(f"Questionnaire {st.session_state.current_questionnaire + 1} higher counter value means that your champion is weaker against the opponent.")
+                    st.header(f"Questionnaire {st.session_state.current_questionnaire + 1} 0 means You counter it (Or you have no synergy), 5 mean is even, 10 mean you counter it(Or you have High Synergy).")
 
                     # Display questionnaire with collapsible sections
                     for hero, matchups in decoded_content.items():
@@ -108,9 +110,9 @@ if check_password():
                                 rating = st.slider(f'Rate {opponent}:', 0, 10, 
                                                  decoded_content[hero][opponent], 
                                                  key=f'{hero}_{opponent}')
-                                decoded_content[hero][opponent] = rating
-
                     if st.button('Submit This Questionnaire'):
+                        updated_content = json.dumps(decoded_content, indent=2)
+                        update_file_content(current_file, updated_content, file_content['sha'])
                         updated_content = json.dumps(decoded_content).encode('utf-8')
                         update_file_content(current_file, updated_content.decode('utf-8'), file_content['sha'])
                         st.session_state.current_questionnaire += 1
