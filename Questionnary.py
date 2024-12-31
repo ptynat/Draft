@@ -5,10 +5,10 @@ import requests
 
 # Manually load environment variables from .env file (alternative method)
 from pathlib import Path
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
 env_path = Path('.') / '.env'
-load_dotenv(dotenv_path=env_path)
+#load_dotenv(dotenv_path=env_path)
 
 # GitHub configuration
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
