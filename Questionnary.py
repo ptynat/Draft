@@ -113,3 +113,8 @@ def check_password():
                         st.error(f"No questionnaire found for {player_name} or error occurred: {e}")
                 else:
                     st.success("All questionnaires completed!")
+                    with st.expander(f'Champion: {hero}'):
+                        with st.expander(f'For {hero}:'):
+                            for opponent in matchups.keys():
+                                rating = st.slider(f'Rate {opponent}:', 0, 10, 5, key=f'{hero}_{opponent}')
+                                decoded_content[hero][opponent] = rating
