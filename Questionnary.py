@@ -79,46 +79,53 @@ if check_password():
         player_name = None
 
     if player_name:
-        counter_file = f'Counters/Counters_{player_name}.json'
-        synergies_file = f'Synergies/Synergies_{player_name}.json'
-        questionnaire_files = [counter_file, synergies_file]
-        page_titles = ['Counters', 'Synergies']
-
-        # Session state to track current questionnaire
-        if 'current_questionnaire' not in st.session_state:
-            st.session_state.current_questionnaire = 0
-
-        if st.session_state.current_questionnaire < len(questionnaire_files):
-            current_file = questionnaire_files[st.session_state.current_questionnaire]
-            st.title(page_titles[st.session_state.current_questionnaire])
-
-            try:
-                file_content = get_file_content(current_file)
-                if file_content:
-                    decoded_content = json.loads(requests.get(file_content['download_url']).text)
-                    st.header(f"Questionnaire {st.session_state.current_questionnaire + 1}: 0 means You counter it (Or you have no synergy), 5 mean is even, 10 mean you counter it(Or you have High Synergy).")
-
-                    # Display questionnaire with collapsible sections
-                    for hero, matchups in decoded_content.items():
-                        with st.expander(f'Champion: {hero}'):
-                            st.subheader(f'For {hero}:')
-                            # Add reset button for this champion
-                            if st.button(f'Reset {hero} ratings', key=f'reset_{hero}'):
-                                for opponent in matchups.keys():
-                                    decoded_content[hero][opponent] = 5
+        # Tabs for different questionnaires
+        tab1, tab2 = st.tabs(["Counters", "Synergies"])
+        
+        with tab1:
+            st.title("Counters Questionnaire")
+            counter_file = f'Counters/Counters_{player_name}.json'
+            file_content = get_file_content(counter_file)
+            if file_content:
+                decoded_content = json.loads(requests.get(file_content['download_url']).text)
+                st.header("Rate from 0 (you counter them) to 10 (they counter you)")
+                
+                for hero, matchups in decoded_content.items():
+                    with st.expander(f'Champion: {hero}'):
+                        st.subheader(f'For {hero}:')
+                        if st.button(f'Reset {hero} ratings', key=f'counter_reset_{hero}'):
                             for opponent in matchups.keys():
-                                rating = st.slider(f'Rate {opponent}:', 0, 10, 
-                                                 decoded_content[hero][opponent], 
-                                                 key=f'{hero}_{opponent}')
-                    if st.button('Submit This Questionnaire'):
-                        updated_content = json.dumps(decoded_content, indent=2)
-                        update_file_content(current_file, updated_content, file_content['sha'])
-                        updated_content = json.dumps(decoded_content).encode('utf-8')
-                        update_file_content(current_file, updated_content.decode('utf-8'), file_content['sha'])
-                        st.session_state.current_questionnaire += 1
-                        st.rerun()
-
-            except Exception as e:
-                st.error(f"No questionnaire found for {player_name} or error occurred: {e}")
-        else:
-            st.success("All questionnaires completed!")
+                                decoded_content[hero][opponent] = 5
+                        for opponent in matchups.keys():
+                            rating = st.slider(f'Rate {opponent}:', 0, 10, 
+                                             decoded_content[hero][opponent], 
+                                             key=f'counter_{hero}_{opponent}')
+                            decoded_content[hero][opponent] = rating
+                
+                if st.button('Submit Counters'):
+                    updated_content = json.dumps(decoded_content, indent=2)
+                    update_file_content(counter_file, updated_content, file_content['sha'])
+        
+        with tab2:
+            st.title("Synergies Questionnaire")
+            synergies_file = f'Synergies/Synergies_{player_name}.json'
+            file_content = get_file_content(synergies_file)
+            if file_content:
+                decoded_content = json.loads(requests.get(file_content['download_url']).text)
+                st.header("Rate from 0 (no synergy) to 10 (high synergy)")
+                
+                for hero, matchups in decoded_content.items():
+                    with st.expander(f'Champion: {hero}'):
+                        st.subheader(f'For {hero}:')
+                        if st.button(f'Reset {hero} ratings', key=f'synergy_reset_{hero}'):
+                            for opponent in matchups.keys():
+                                decoded_content[hero][opponent] = 5
+                        for opponent in matchups.keys():
+                            rating = st.slider(f'Rate {opponent}:', 0, 10, 
+                                             decoded_content[hero][opponent], 
+                                             key=f'synergy_{hero}_{opponent}')
+                            decoded_content[hero][opponent] = rating
+                
+                if st.button('Submit Synergies'):
+                    updated_content = json.dumps(decoded_content, indent=2)
+                    update_file_content(synergies_file, updated_content, file_content['sha'])
