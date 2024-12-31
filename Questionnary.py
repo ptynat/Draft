@@ -65,52 +65,51 @@ def check_password():
         st.error("Password incorrect")
         return False
     else:
-        return True
 
-if check_password():
-    # Player name input as a text field
-    player_name = st.text_input("Enter your name:", "")
+        if check_password():
+            # Player name input as a text field
+            player_name = st.text_input("Enter your name:", "")
 
-    # Validate if name exists in players list
-    if player_name and player_name not in players:
-        st.error("Player name not found. Please enter a valid name.")
-        player_name = None
+            # Validate if name exists in players list
+            if player_name and player_name not in players:
+                st.error("Player name not found. Please enter a valid name.")
+                player_name = None
 
-    if player_name:
-        counter_file = f'Counters/Counters_{player_name}.json'
-        synergies_file = f'Synergies/Synergies_{player_name}.json'
-        questionnaire_files = [counter_file, synergies_file]
-        page_titles = ['Counters', 'Synergies']
+            if player_name:
+                counter_file = f'Counters/Counters_{player_name}.json'
+                synergies_file = f'Synergies/Synergies_{player_name}.json'
+                questionnaire_files = [counter_file, synergies_file]
+                page_titles = ['Counters', 'Synergies']
 
-        # Session state to track current questionnaire
-        if 'current_questionnaire' not in st.session_state:
-            st.session_state.current_questionnaire = 0
+                # Session state to track current questionnaire
+                if 'current_questionnaire' not in st.session_state:
+                    st.session_state.current_questionnaire = 0
 
-        if st.session_state.current_questionnaire < len(questionnaire_files):
-            current_file = questionnaire_files[st.session_state.current_questionnaire]
-            st.title(page_titles[st.session_state.current_questionnaire])
+                if st.session_state.current_questionnaire < len(questionnaire_files):
+                    current_file = questionnaire_files[st.session_state.current_questionnaire]
+                    st.title(page_titles[st.session_state.current_questionnaire])
 
-            try:
-                file_content = get_file_content(current_file)
-                if file_content:
-                    decoded_content = json.loads(requests.get(file_content['download_url']).text)
-                    st.header(f"Questionnaire {st.session_state.current_questionnaire + 1}")
+                    try:
+                        file_content = get_file_content(current_file)
+                        if file_content:
+                            decoded_content = json.loads(requests.get(file_content['download_url']).text)
+                            st.header(f"Questionnaire {st.session_state.current_questionnaire + 1}")
 
-                    # Display questionnaire
-                    for hero, matchups in decoded_content.items():
-                        st.subheader(f'For {hero}:')
-                        for opponent in matchups.keys():
-                            rating = st.slider(f'Rate {opponent}:', 0, 10, 5, key=f'{hero}_{opponent}')
-                            decoded_content[hero][opponent] = rating
+                            # Display questionnaire with collapsible sections
+                            for hero, matchups in decoded_content.items():
+                                with st.expander(f'Champion: {hero}'):
+                                    st.subheader(f'For {hero}:')
+                                    for opponent in matchups.keys():
+                                        rating = st.slider(f'Rate {opponent}:', 0, 10, 5, key=f'{hero}_{opponent}')
+                                        decoded_content[hero][opponent] = rating
 
-                    if st.button('Submit This Questionnaire'):
-                        updated_content = json.dumps(decoded_content).encode('utf-8')
-                        update_file_content(current_file, updated_content.decode('utf-8'), file_content['sha'])
-                        st.session_state.current_questionnaire += 1
-                        st.rerun()
+                            if st.button('Submit This Questionnaire'):
+                                updated_content = json.dumps(decoded_content).encode('utf-8')
+                                update_file_content(current_file, updated_content.decode('utf-8'), file_content['sha'])
+                                st.session_state.current_questionnaire += 1
+                                st.rerun()
 
-            except Exception as e:
-                st.error(f"No questionnaire found for {player_name} or error occurred: {e}")
-        else:
-            st.success("All questionnaires completed!")
-
+                    except Exception as e:
+                        st.error(f"No questionnaire found for {player_name} or error occurred: {e}")
+                else:
+                    st.success("All questionnaires completed!")
