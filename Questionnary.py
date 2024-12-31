@@ -10,7 +10,7 @@ load_dotenv()
 # GitHub configuration
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 REPO_OWNER = 'Ptynat'
-REPO_NAME = 'Draft_Ptynat'
+REPO_NAME = 'Ptynat_Draft'
 BASE_URL = f'https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/'
 
 # List of valid players
