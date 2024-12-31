@@ -91,32 +91,32 @@ if check_password():
             st.title(page_titles[st.session_state.current_questionnaire])
 
             try:
-            file_content = get_file_content(current_file)
-            if file_content:
-                decoded_content = json.loads(requests.get(file_content['download_url']).text)
-                st.header(f"Questionnaire {st.session_state.current_questionnaire + 1}")
+                file_content = get_file_content(current_file)
+                if file_content:
+                    decoded_content = json.loads(requests.get(file_content['download_url']).text)
+                    st.header(f"Questionnaire {st.session_state.current_questionnaire + 1}")
 
-                # Display questionnaire with collapsible sections
-                for hero, matchups in decoded_content.items():
-                with st.expander(f'Champion: {hero}'):
-                    st.subheader(f'For {hero}:')
-                    # Add reset button for this champion
-                    if st.button(f'Reset {hero} ratings', key=f'reset_{hero}'):
-                    for opponent in matchups.keys():
-                        decoded_content[hero][opponent] = 5
-                    for opponent in matchups.keys():
-                    rating = st.slider(f'Rate {opponent}:', 0, 10, 
-                             decoded_content[hero][opponent], 
-                             key=f'{hero}_{opponent}')
-                    decoded_content[hero][opponent] = rating
+                    # Display questionnaire with collapsible sections
+                    for hero, matchups in decoded_content.items():
+                        with st.expander(f'Champion: {hero}'):
+                            st.subheader(f'For {hero}:')
+                            # Add reset button for this champion
+                            if st.button(f'Reset {hero} ratings', key=f'reset_{hero}'):
+                                for opponent in matchups.keys():
+                                    decoded_content[hero][opponent] = 5
+                            for opponent in matchups.keys():
+                                rating = st.slider(f'Rate {opponent}:', 0, 10, 
+                                                 decoded_content[hero][opponent], 
+                                                 key=f'{hero}_{opponent}')
+                                decoded_content[hero][opponent] = rating
 
-                if st.button('Submit This Questionnaire'):
-                updated_content = json.dumps(decoded_content).encode('utf-8')
-                update_file_content(current_file, updated_content.decode('utf-8'), file_content['sha'])
-                st.session_state.current_questionnaire += 1
-                st.rerun()
+                    if st.button('Submit This Questionnaire'):
+                        updated_content = json.dumps(decoded_content).encode('utf-8')
+                        update_file_content(current_file, updated_content.decode('utf-8'), file_content['sha'])
+                        st.session_state.current_questionnaire += 1
+                        st.rerun()
 
             except Exception as e:
-            st.error(f"No questionnaire found for {player_name} or error occurred: {e}")
+                st.error(f"No questionnaire found for {player_name} or error occurred: {e}")
         else:
             st.success("All questionnaires completed!")
