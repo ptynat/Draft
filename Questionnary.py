@@ -2,10 +2,13 @@ import streamlit as st
 import json
 import os
 import requests
+
+# Manually load environment variables from .env file (alternative method)
+from pathlib import Path
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
+env_path = Path('.') / '.env'
+load_dotenv(dotenv_path=env_path)
 
 # GitHub configuration
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -110,3 +113,4 @@ if check_password():
                 st.error(f"No questionnaire found for {player_name} or error occurred: {e}")
         else:
             st.success("All questionnaires completed!")
+
