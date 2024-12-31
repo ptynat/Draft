@@ -96,7 +96,7 @@ if check_password():
                 file_content = get_file_content(current_file)
                 if file_content:
                     decoded_content = json.loads(requests.get(file_content['download_url']).text)
-                    st.header(f"Questionnaire {st.session_state.current_questionnaire + 1} 0 means You counter it (Or you have no synergy), 5 mean is even, 10 mean you counter it(Or you have High Synergy).")
+                    st.header(f"Questionnaire {st.session_state.current_questionnaire + 1}: 0 means You counter it (Or you have no synergy), 5 mean is even, 10 mean you counter it(Or you have High Synergy).")
 
                     # Display questionnaire with collapsible sections
                     for hero, matchups in decoded_content.items():
