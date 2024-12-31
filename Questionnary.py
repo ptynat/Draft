@@ -94,7 +94,7 @@ if check_password():
                 file_content = get_file_content(current_file)
                 if file_content:
                     decoded_content = json.loads(requests.get(file_content['download_url']).text)
-                    st.header(f"Questionnaire {st.session_state.current_questionnaire + 1}")
+                    st.header(f"Questionnaire {st.session_state.current_questionnaire + 1} higher counter value means that your champion is weaker against the opponent.")
 
                     # Display questionnaire with collapsible sections
                     for hero, matchups in decoded_content.items():
