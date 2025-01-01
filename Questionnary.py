@@ -117,9 +117,6 @@ if check_password():
                 for hero, matchups in decoded_content.items():
                     with st.expander(f'Champion: {hero}'):
                         st.subheader(f'For {hero}:')
-                        if st.button(f'Reset {hero} ratings', key=f'synergy_reset_{hero}'):
-                            for opponent in matchups.keys():
-                                decoded_content[hero][opponent] = 5
                         for opponent in matchups.keys():
                             rating = st.slider(f'Rate {opponent}:', 0, 10, 
                                              decoded_content[hero][opponent], 
@@ -129,3 +126,22 @@ if check_password():
                 if st.button('Submit Synergies'):
                     updated_content = json.dumps(decoded_content, indent=2)
                     update_file_content(synergies_file, updated_content, file_content['sha'])
+                    # Comfort tab
+                    tab3 = st.tabs(["Counters", "Synergies", "Comfort"])[2]
+                    with tab3:
+                        st.title("Comfort Questionnaire")
+                        comfort_file = f'Comfort/Comfort_{player_name}.json'
+                        file_content = get_file_content(comfort_file)
+                        if file_content:
+                            decoded_content = json.loads(requests.get(file_content['download_url']).text)
+                            st.header("Rate from 0 (not comfortable) to 10 (very comfortable)")
+                            
+                            for hero, rating in decoded_content.items():
+                            value = st.slider(f'Rate {hero}:', 0, 10, 
+                                    rating,
+                                    key=f'comfort_{hero}')
+                            decoded_content[hero] = value
+                        
+                        if st.button('Submit Comfort'):
+                            updated_content = json.dumps(decoded_content, indent=2)
+                            update_file_content(comfort_file, updated_content, file_content['sha'])
