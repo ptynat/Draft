@@ -80,7 +80,7 @@ if check_password():
 
     if player_name:
         # Tabs for different questionnaires
-        tab1, tab2 = st.tabs(["Counters", "Synergies"])
+        tab1, tab2, tab3 = st.tabs(["Counters", "Synergies", "Comfort"])
         
         with tab1:
             st.title("Counters Questionnaire")
@@ -126,22 +126,21 @@ if check_password():
                 if st.button('Submit Synergies'):
                     updated_content = json.dumps(decoded_content, indent=2)
                     update_file_content(synergies_file, updated_content, file_content['sha'])
-                    # Comfort tab
-                    tab3 = st.tabs(["Counters", "Synergies", "Comfort"])[2]
-                    with tab3:
-                        st.title("Comfort Questionnaire")
-                        comfort_file = f'Comfort/Comfort_{player_name}.json'
-                        file_content = get_file_content(comfort_file)
-                        if file_content:
-                            decoded_content = json.loads(requests.get(file_content['download_url']).text)
-                            st.header("Rate from 0 (not comfortable) to 10 (very comfortable)")
-                            
-                            for hero, rating in decoded_content.items():
-                                value = st.slider(f'Rate {hero}:', 0, 10, 
-                                        rating,
-                                        key=f'comfort_{hero}')
-                                decoded_content[hero] = value
-                        
-                        if st.button('Submit Comfort'):
-                            updated_content = json.dumps(decoded_content, indent=2)
-                            update_file_content(comfort_file, updated_content, file_content['sha'])
+
+        with tab3:
+            st.title("Comfort Questionnaire")
+            comfort_file = f'Comfort/Comfort_{player_name}.json'
+            file_content = get_file_content(comfort_file)
+            if file_content:
+                decoded_content = json.loads(requests.get(file_content['download_url']).text)
+                st.header("Rate from 0 (not comfortable) to 10 (very comfortable)")
+                
+                for hero, rating in decoded_content.items():
+                    value = st.slider(f'Rate {hero}:', 0, 10, 
+                                    rating,
+                                    key=f'comfort_{hero}')
+                    decoded_content[hero] = value
+                
+                if st.button('Submit Comfort'):
+                    updated_content = json.dumps(decoded_content, indent=2)
+                    update_file_content(comfort_file, updated_content, file_content['sha'])
