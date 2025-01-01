@@ -137,10 +137,10 @@ if check_password():
                             st.header("Rate from 0 (not comfortable) to 10 (very comfortable)")
                             
                             for hero, rating in decoded_content.items():
-                            value = st.slider(f'Rate {hero}:', 0, 10, 
-                                    rating,
-                                    key=f'comfort_{hero}')
-                            decoded_content[hero] = value
+                                value = st.slider(f'Rate {hero}:', 0, 10, 
+                                        rating,
+                                        key=f'comfort_{hero}')
+                                decoded_content[hero] = value
                         
                         if st.button('Submit Comfort'):
                             updated_content = json.dumps(decoded_content, indent=2)
