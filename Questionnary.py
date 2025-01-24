@@ -17,7 +17,7 @@ REPO_NAME = 'Draft_Ptynat'
 BASE_URL = f'https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/'
 
 # List of valid players
-players = ["Ezpzmaglll", "Silox", "Ptynat", "Saymus", "Secret"]
+players = ["Ezpzmaglll", "Gerolly", "Ptynat", "Saymus", "Secret"]
 
 # Function to get the file content from GitHub
 def get_file_content(file_path):
