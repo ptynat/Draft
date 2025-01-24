@@ -84,7 +84,7 @@ if check_password():
         
         with tab1:
             st.title("Counters Questionnaire")
-            counter_file = f'Counters/Counters_{player_name}.json'
+            counter_file = f'data/Counters/Counters_{player_name}.json'
             file_content = get_file_content(counter_file)
             if file_content:
                 decoded_content = json.loads(requests.get(file_content['download_url']).text)
@@ -108,7 +108,7 @@ if check_password():
         
         with tab2:
             st.title("Synergies Questionnaire")
-            synergies_file = f'Synergies/Synergies_{player_name}.json'
+            synergies_file = f'data/Synergies/Synergies_{player_name}.json'
             file_content = get_file_content(synergies_file)
             if file_content:
                 decoded_content = json.loads(requests.get(file_content['download_url']).text)
@@ -129,7 +129,7 @@ if check_password():
 
         with tab3:
             st.title("Comfort Questionnaire")
-            comfort_file = f'Comfort/Comfort_{player_name}.json'
+            comfort_file = f'data/Comfort/Comfort_{player_name}.json'
             file_content = get_file_content(comfort_file)
             if file_content:
                 decoded_content = json.loads(requests.get(file_content['download_url']).text)
